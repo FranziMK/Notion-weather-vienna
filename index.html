@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Wetter Widget Wien</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap');
+
+    :root {
+      --sunny: #fff9c4;
+      --cloudy: #cfd8dc;
+      --rainy: #b3e5fc;
+      --snowy: #e1f5fe;
+      --stormy: #c5cae9;
+      --thunder: #d1c4e9;
+
+      --clear-night: #b0bec5;
+      --cloudy-night: #90a4ae;
+      --rainy-night: #81d4fa;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .widget {
+      width: 250px;
+      height: 250px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background-color: var(--cloudy);
+      transition: background-color 0.5s ease-in-out;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    .icon-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 160px;
+      color: rgba(255, 255, 255, 0.25);
+      z-index: 2;
+    }
+
+    .temperature {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18vw;
+      max-font-size: 120px;
+      color: white;
+      font-weight: 300;
+      line-height: 1;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.15);
+      z-index: 3;
+    }
+
+    .temperature .degree {
+      font-size: 0.4em;
+      vertical-align: super;
+    }
+
+    .location {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 20px;
+      color: white;
+      letter-spacing: 2px;
+      font-weight: 600;
+      z-index: 3;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget" id="widget">
+    <div class="overlay" id="overlay"></div>
+    <div class="icon-bg" id="weather-icon">⛅</div>
+    <div class="temperature" id="temperature"><span class="value">--</span><span class="degree">°</span></div>
+    <div class="location">WIEN</div>
+  </div>
+
+  <script>
+    function isNightTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      return hours < 6 || hours > 20;
+    }
+
+    async function loadWeather() {
+      try {
+        const response = await fetch("https://wttr.in/Vienna?format=%t+%c");
+        const text = await response.text();
+        const match = text.match(/(-?\d+)°C\s(.+)/);
+        const widget = document.getElementById("widget");
+
+        if (match) {
+          const tempValue = match[1];
+          const icon = match[2];
+          document.querySelector(".temperature .value").innerText = tempValue;
+          document.getElementById("weather-icon").innerText = icon;
+
+          let color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy');
+
+          if (isNightTime()) {
+            if (icon.includes("☁") || icon.includes("⛅")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy-night');
+            } else if (icon.includes("🌧") || icon.includes("☔") || icon.includes("🌦")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--rainy-night');
+            } else {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--clear-night');
+            }
+          } else {
+            if (icon.includes("☀") || icon.includes("🌞")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--sunny');
+            } else if (icon.includes("☁") || icon.includes("⛅")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy');
+            } else if (icon.includes("🌧") || icon.includes("☔") || icon.includes("🌦")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--rainy');
+            } else if (icon.includes("❄") || icon.includes("☃")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--snowy');
+            } else if (icon.includes("💨")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--stormy');
+            } else if (icon.includes("⚡") || icon.includes("⛈")) {
+              color = getComputedStyle(document.documentElement).getPropertyValue('--thunder');
+            }
+          }
+
+          widget.style.backgroundColor = color;
+        } else {
+          document.querySelector(".temperature .value").innerText = "??";
+        }
+      } catch (e) {
+        document.querySelector(".temperature .value").innerText = "offline";
+      }
+    }
+
+    loadWeather();
+  </script>
+</body>
+</html>
