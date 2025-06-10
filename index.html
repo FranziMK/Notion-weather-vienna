@@ -12,26 +12,25 @@
       --night: #4a6380;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      background: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      height: 100%;
       font-family: 'Outfit', sans-serif;
+      background: transparent;
     }
 
     .widget {
-      width: 250px;
-      height: 250px;
+      width: 100vmin;
+      height: 100vmin;
+      max-width: 300px;
+      max-height: 300px;
+      aspect-ratio: 1 / 1;
       border-radius: 20px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      background-color: var(--day);
-      transition: background-color 0.5s ease-in-out;
+      background-color: transparent;
     }
 
     .icon-bg {
@@ -39,7 +38,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 160px;
+      font-size: 60vmin;
       color: rgba(255, 255, 255, 0.3);
       z-index: 1;
     }
@@ -49,8 +48,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 10.5vw;
-      max-font-size: 165px;
+      font-size: 66vmin;
       color: white;
       font-weight: 300;
       line-height: 1;
@@ -59,12 +57,8 @@
       align-items: flex-start;
     }
 
-    .temperature .value {
-      font-size: 10.5vw;
-    }
-
     .temperature .degree {
-      font-size: 0.4em;
+      font-size: 0.25em;
       position: relative;
       top: -0.6em;
       margin-left: 0.05em;
@@ -74,7 +68,7 @@
       position: absolute;
       top: 12px;
       right: 16px;
-      font-size: 14px;
+      font-size: 4vmin;
       color: white;
       letter-spacing: 2px;
       font-weight: 600;
@@ -109,8 +103,9 @@
           document.querySelector(".temperature .value").innerText = tempValue;
           document.getElementById("weather-icon").innerText = icon;
 
-          const isNight = isNightTime();
-          widget.style.backgroundColor = isNight ? getComputedStyle(document.documentElement).getPropertyValue('--night') : getComputedStyle(document.documentElement).getPropertyValue('--day');
+          widget.style.backgroundColor = isNightTime()
+            ? getComputedStyle(document.documentElement).getPropertyValue('--night')
+            : getComputedStyle(document.documentElement).getPropertyValue('--day');
         } else {
           document.querySelector(".temperature .value").innerText = "??";
         }
