@@ -8,16 +8,8 @@
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap');
 
     :root {
-      --sunny: #fff9c4;
-      --cloudy: #cfd8dc;
-      --rainy: #b3e5fc;
-      --snowy: #e1f5fe;
-      --stormy: #c5cae9;
-      --thunder: #d1c4e9;
-
-      --clear-night: #b0bec5;
-      --cloudy-night: #90a4ae;
-      --rainy-night: #81d4fa;
+      --day: #d0e8f2;
+      --night: #4a6380;
     }
 
     body {
@@ -38,16 +30,8 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      background-color: var(--cloudy);
+      background-color: var(--day);
       transition: background-color 0.5s ease-in-out;
-    }
-
-    .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.2);
-      z-index: 1;
     }
 
     .icon-bg {
@@ -56,8 +40,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 160px;
-      color: rgba(255, 255, 255, 0.25);
-      z-index: 2;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 1;
     }
 
     .temperature {
@@ -65,37 +49,42 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 18vw;
-      max-font-size: 120px;
+      font-size: 10.5vw;
+      max-font-size: 165px;
       color: white;
       font-weight: 300;
       line-height: 1;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.15);
-      z-index: 3;
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .temperature .value {
+      font-size: 10.5vw;
     }
 
     .temperature .degree {
       font-size: 0.4em;
-      vertical-align: super;
+      position: relative;
+      top: -0.6em;
+      margin-left: 0.05em;
     }
 
     .location {
       position: absolute;
       top: 12px;
       right: 16px;
-      font-size: 20px;
+      font-size: 14px;
       color: white;
       letter-spacing: 2px;
       font-weight: 600;
-      z-index: 3;
-      text-align: right;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
   <div class="widget" id="widget">
-    <div class="overlay" id="overlay"></div>
-    <div class="icon-bg" id="weather-icon">⛅</div>
+    <div class="icon-bg" id="weather-icon">☀</div>
     <div class="temperature" id="temperature"><span class="value">--</span><span class="degree">°</span></div>
     <div class="location">WIEN</div>
   </div>
@@ -120,33 +109,8 @@
           document.querySelector(".temperature .value").innerText = tempValue;
           document.getElementById("weather-icon").innerText = icon;
 
-          let color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy');
-
-          if (isNightTime()) {
-            if (icon.includes("☁") || icon.includes("⛅")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy-night');
-            } else if (icon.includes("🌧") || icon.includes("☔") || icon.includes("🌦")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--rainy-night');
-            } else {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--clear-night');
-            }
-          } else {
-            if (icon.includes("☀") || icon.includes("🌞")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--sunny');
-            } else if (icon.includes("☁") || icon.includes("⛅")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--cloudy');
-            } else if (icon.includes("🌧") || icon.includes("☔") || icon.includes("🌦")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--rainy');
-            } else if (icon.includes("❄") || icon.includes("☃")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--snowy');
-            } else if (icon.includes("💨")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--stormy');
-            } else if (icon.includes("⚡") || icon.includes("⛈")) {
-              color = getComputedStyle(document.documentElement).getPropertyValue('--thunder');
-            }
-          }
-
-          widget.style.backgroundColor = color;
+          const isNight = isNightTime();
+          widget.style.backgroundColor = isNight ? getComputedStyle(document.documentElement).getPropertyValue('--night') : getComputedStyle(document.documentElement).getPropertyValue('--day');
         } else {
           document.querySelector(".temperature .value").innerText = "??";
         }
